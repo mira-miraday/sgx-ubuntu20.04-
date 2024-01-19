@@ -1,5 +1,17 @@
 # sgx-ubuntu20.04-
 sgx安装ubuntu20.04
+
+
+sgx环境安装
+https://zhuanlan.zhihu.com/p/560110720?utm_medium=social&utm_oi=864207061897084928&utm_psn=1731469677329649664&utm_source=wechat_session
+https://zhuanlan.zhihu.com/p/415812610?utm_medium=social&utm_oi=864207061897084928&utm_psn=1731470522913873920&utm_source=wechat_session
+https://zhuanlan.zhihu.com/p/423209850?utm_medium=social&utm_oi=864207061897084928&utm_psn=1731470039079559168&utm_source=wechat_session
+
+ubuntu启动盘制作
+https://blog.csdn.net/qq_36661831/article/details/79724930
+https://zhuanlan.zhihu.com/p/378668860?utm_medium=social&utm_oi=864207061897084928&utm_psn=1731599629186232320&utm_source=wechat_session
+https://zhuanlan.zhihu.com/p/197908477?utm_medium=social&utm_oi=864207061897084928&utm_psn=1731599543358214144&utm_source=wechat_session
+
 一、driver安装
 
 1.在该下载地址将3个.bin文件下载下来，下载地址：https://download.01.org/intel-sgx/latest/linux-latest/distro/ubuntu20.04-server/
