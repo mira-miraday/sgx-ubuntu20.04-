@@ -1,0 +1,163 @@
+
+    <html lang="zh-CN">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+      <body class="nodata " style="">    
+     
+        <main style="width:100%">  
+        <div class="blog-content-box"> 
+            <div class="article-title-box">
+                <h1 class="title-article" id="articleContentId">如何把Kali Linux装进U盘或者移动硬盘并使其可以在UEFI的机器上启动使用</h1>
+            </div><div id="article_content" class="article_content clearfix">
+        <link rel="stylesheet" href="https://csdnimg.cn/release/blogv2/dist/mdeditor/css/editerView/kdoc_html_views-1a98987dfd.css">
+        <link rel="stylesheet" href="https://csdnimg.cn/release/blogv2/dist/mdeditor/css/editerView/ck_htmledit_views-044f2cf1dc.css">
+                <div id="content_views" class="htmledit_views">
+                    <p>&nbsp; &nbsp; 网上，书上都有把<a href="https://so.csdn.net/so/search?q=kali&amp;spm=1001.2101.3001.7020" target="_blank" class="hl hl-1" data-report-click="{&quot;spm&quot;:&quot;1001.2101.3001.7020&quot;,&quot;dest&quot;:&quot;https://so.csdn.net/so/search?q=kali&amp;spm=1001.2101.3001.7020&quot;,&quot;extra&quot;:&quot;{\&quot;searchword\&quot;:\&quot;kali\&quot;}&quot;}" data-tit="kali" data-pretit="kali">kali</a>装进U盘或者移动硬盘作为便携式系统的教程，但是这只支持BIOS+MBR的模式。现在的电脑都是UEFI主板了。如何制作一个便携式的Kali系统并使其支持UEFI的电脑呢？</p> 
+<p><strong>准备工作：</strong></p> 
+<p>0，一个移动硬盘或者性能好点的U盘。</p> 
+<p>1，kali官方iso镜像，下载地址：<a href="https://www.kali.org/downloads/" rel="nofollow">点击以下载</a></p> 
+<p>2，分区工具：<a href="https://www.lanzous.com/i7z20gf" rel="nofollow">分区助手</a>和<a href="http://www.diskgenius.cn/download.php" rel="nofollow">diskgenius</a></p> 
+<p>3，虚拟机<a href="https://pan.baidu.com/s/184a5tMC1VtAa17mfS1BCQg" rel="nofollow">VMware 15.5</a></p> 
+<p>&nbsp;</p> 
+<p><strong>下面就可以开始了！</strong></p> 
+<p>&nbsp;</p> 
+<p><strong>一、首先给我们的移动硬盘/U盘分区</strong></p> 
+<p>&nbsp; &nbsp; &nbsp; &nbsp; 我这里有一个500GB的移动硬盘，是我平时日常存放文件用的。当然这也不影响，我们给它分一个区专门安装linux系统。这样这个盘既可以日常存放资料，也可以作为便携式kali linux使用。</p> 
+<p>&nbsp; &nbsp; &nbsp; &nbsp; 我们的kali需要3个分区：（1）大小约100MB的EFI启动分区</p> 
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; （2）大小约8GB的交换分区（swap）</p> 
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; （3）大小约为100GB的EXT4系统分区</p> 
+<p>我这里以分区助手为例：</p> 
+<p>1，安装并打开分区助手，找到我们的移动硬盘或者U盘，右键-拆分分区，给它切割约110GB的分区出来（就是上面说的3个分区之加起来的大小，可以略大）：</p> 
+<p><img alt="" class="has" src="https://img-blog.csdnimg.cn/20191119123734959.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3lhbmhhbmh1aTE=,size_16,color_FFFFFF,t_70"></p> 
+<p><img alt="" class="has" height="255" src="https://img-blog.csdnimg.cn/20191119123821897.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3lhbmhhbmh1aTE=,size_16,color_FFFFFF,t_70" width="1200"></p> 
+<p>2，再把我们新分出的分区删除：</p> 
+<p><img alt="" class="has" height="559" src="https://img-blog.csdnimg.cn/20191119123923850.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3lhbmhhbmh1aTE=,size_16,color_FFFFFF,t_70" width="363"></p> 
+<p>3，最终结果如图，点击左上角提交完成分区操作：</p> 
+<p>&nbsp;<img alt="" class="has" height="1023" src="https://img-blog.csdnimg.cn/20191119124217319.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3lhbmhhbmh1aTE=,size_16,color_FFFFFF,t_70" width="1200"></p> 
+<p>&nbsp;</p> 
+<p>&nbsp;</p> 
+<p><strong>二、使用VMware虚拟机来把kali安装至移动硬盘</strong></p> 
+<p>1，安装VMware15.5，打开，新建虚拟机：</p> 
+<p><img alt="" class="has" height="920" src="https://img-blog.csdnimg.cn/20191119124400544.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3lhbmhhbmh1aTE=,size_16,color_FFFFFF,t_70" width="1200"></p> 
+<p>2，选择典型，下一步：&nbsp;</p> 
+<p><img alt="" class="has" height="551" src="https://img-blog.csdnimg.cn/20191119124408472.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3lhbmhhbmh1aTE=,size_16,color_FFFFFF,t_70" width="570"></p> 
+<p>3，选择“安装程序光盘映像文件”那一个，选择你下载好的kali linux镜像文件（iso格式）：</p> 
+<p><img alt="" class="has" height="768" src="https://img-blog.csdnimg.cn/20191119124539775.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3lhbmhhbmh1aTE=,size_16,color_FFFFFF,t_70" width="1024"></p> 
+<p>&nbsp;</p> 
+<p>4，选择linux，版本选Debian 9.x 64位或10.x 64位（位数取决于你下载的系统映像的位数）：</p> 
+<p><img alt="" class="has" height="554" src="https://img-blog.csdnimg.cn/20191119124659226.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3lhbmhhbmh1aTE=,size_16,color_FFFFFF,t_70" width="572"></p> 
+<p>5，名字随便，选一个虚拟机储存位置，后续的步骤如下：</p> 
+<p>&nbsp;<img alt="" class="has" height="565" src="https://img-blog.csdnimg.cn/20191119124726407.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3lhbmhhbmh1aTE=,size_16,color_FFFFFF,t_70" width="576"></p> 
+<p>&nbsp;<img alt="" class="has" height="551" src="https://img-blog.csdnimg.cn/20191119124733558.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3lhbmhhbmh1aTE=,size_16,color_FFFFFF,t_70" width="570"></p> 
+<p>&nbsp;<img alt="" class="has" height="567" src="https://img-blog.csdnimg.cn/20191119124739935.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3lhbmhhbmh1aTE=,size_16,color_FFFFFF,t_70" width="578"></p> 
+<p>6，点击编辑虚拟机设置：&nbsp;</p> 
+<p>&nbsp;<img alt="" class="has" height="768" src="https://img-blog.csdnimg.cn/20191119124743939.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3lhbmhhbmh1aTE=,size_16,color_FFFFFF,t_70" width="1024"></p> 
+<p>7，选择“硬盘”并点击下面的“移除”按钮来移除虚拟硬盘，再点击“USB控制器”，右边兼容性根据你的移动硬盘/U盘的接口选择，我的是USB3.0的移动硬盘所以这里选3.0：</p> 
+<p><img alt="" class="has" height="938" src="https://img-blog.csdnimg.cn/20191119125130739.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3lhbmhhbmh1aTE=,size_16,color_FFFFFF,t_70" width="859"></p> 
+<p>&nbsp;<img alt="" class="has" height="940" src="https://img-blog.csdnimg.cn/20191119125142923.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3lhbmhhbmh1aTE=,size_16,color_FFFFFF,t_70" width="854"></p> 
+<p>8，单击上面的“选项”标签，选择下面的“高级”一栏，把右边下面的“固件类型”改为UEFI：</p> 
+<p><img alt="" class="has" height="939" src="https://img-blog.csdnimg.cn/20191119125320180.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3lhbmhhbmh1aTE=,size_16,color_FFFFFF,t_70" width="860"></p> 
+<p>9，确定，然后打开虚拟机，这时就进入安装界面了：</p> 
+<p><img alt="" class="has" height="920" src="https://img-blog.csdnimg.cn/20191119125418847.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3lhbmhhbmh1aTE=,size_16,color_FFFFFF,t_70" width="1200"></p> 
+<p>10，点击右下角的USB控制按钮，位置如图指示：</p> 
+<p><img alt="" class="has" height="920" src="https://img-blog.csdnimg.cn/20191119125458638.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3lhbmhhbmh1aTE=,size_16,color_FFFFFF,t_70" width="1200"></p> 
+<p>&nbsp;11，在弹出的菜单里点击“连接（断开与 主机 的连接）”这个选项，这样就把移动硬盘/U盘连接到虚拟机了：</p> 
+<p><img alt="" class="has" height="182" src="https://img-blog.csdnimg.cn/20191119125630593.jpg" width="509"></p> 
+<p><img alt="" class="has" height="174" src="https://img-blog.csdnimg.cn/20191119125641696.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3lhbmhhbmh1aTE=,size_16,color_FFFFFF,t_70" width="388"><img alt="" class="has" height="228" src="https://img-blog.csdnimg.cn/2019111912565925.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3lhbmhhbmh1aTE=,size_16,color_FFFFFF,t_70" width="305"></p> 
+<p>12，单击虚拟机进入，用上下键控制，回车选择“Start installer”：</p> 
+<p><img alt="" class="has" height="482" src="https://img-blog.csdnimg.cn/20191119125828793.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3lhbmhhbmh1aTE=,size_16,color_FFFFFF,t_70" width="907"></p> 
+<p>13，选择简体中文，地区什么的都选中国，接着完成后面的主机名、密码配置，这几步很简单：</p> 
+<p><img alt="" class="has" height="768" src="https://img-blog.csdnimg.cn/20191119125930503.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3lhbmhhbmh1aTE=,size_16,color_FFFFFF,t_70" width="1024"></p> 
+<p><img alt="" class="has" height="768" src="https://img-blog.csdnimg.cn/20191119125938930.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3lhbmhhbmh1aTE=,size_16,color_FFFFFF,t_70" width="1024"></p> 
+<figure class="image"> 
+ <img alt="" height="768" src="https://img-blog.csdnimg.cn/20191119125946282.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3lhbmhhbmh1aTE=,size_16,color_FFFFFF,t_70" width="1024"> 
+ <figcaption>
+   域名什么都不用填直接继续 
+ </figcaption> 
+</figure> 
+<p>&nbsp;<img alt="" class="has" height="768" src="https://img-blog.csdnimg.cn/20191119130038921.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3lhbmhhbmh1aTE=,size_16,color_FFFFFF,t_70" width="1024"></p> 
+<p>&nbsp;</p> 
+<figure class="image"> 
+ <img alt="" height="768" src="https://img-blog.csdnimg.cn/20191119130103554.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3lhbmhhbmh1aTE=,size_16,color_FFFFFF,t_70" width="1024"> 
+ <figcaption>
+   提示是否强制UEFI，选是继续 
+ </figcaption> 
+</figure> 
+<p>&nbsp;14，后面开始检测磁盘并启动分区配置程序，这里点击手动：</p> 
+<p><img alt="" class="has" height="768" src="https://img-blog.csdnimg.cn/20191119130209924.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3lhbmhhbmh1aTE=,size_16,color_FFFFFF,t_70" width="1024"></p> 
+<p>15，这里我们看到了我们的硬盘。双击硬盘下面的空闲分区（这个空闲分区就是我们第一大步分出来留空的分区），进入后，创建新分区，大小0.1GB，类型主分区，位置开始。然后双击“用于。。。”那一栏，进入后双击选择“EFI系统分区”，步骤如图：、</p> 
+<p><img alt="" class="has" height="768" src="https://img-blog.csdnimg.cn/20191119130511488.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3lhbmhhbmh1aTE=,size_16,color_FFFFFF,t_70" width="1024"></p> 
+<p><img alt="" class="has" height="768" src="https://img-blog.csdnimg.cn/20191119130518926.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3lhbmhhbmh1aTE=,size_16,color_FFFFFF,t_70" width="1024"></p> 
+<p><img alt="" class="has" height="768" src="https://img-blog.csdnimg.cn/20191119130645102.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3lhbmhhbmh1aTE=,size_16,color_FFFFFF,t_70" width="1024"></p> 
+<p>&nbsp;<img alt="" class="has" height="768" src="https://img-blog.csdnimg.cn/201911191306515.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3lhbmhhbmh1aTE=,size_16,color_FFFFFF,t_70" width="1024"></p> 
+<p><img alt="" class="has" height="768" src="https://img-blog.csdnimg.cn/20191119130700195.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3lhbmhhbmh1aTE=,size_16,color_FFFFFF,t_70" width="1024"></p> 
+<p><img alt="" class="has" height="768" src="https://img-blog.csdnimg.cn/20191119130706496.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3lhbmhhbmh1aTE=,size_16,color_FFFFFF,t_70" width="1024"></p> 
+<p><img alt="" class="has" height="768" src="https://img-blog.csdnimg.cn/20191119130715694.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3lhbmhhbmh1aTE=,size_16,color_FFFFFF,t_70" width="1024"></p> 
+<p>这里这个EFI启动分区就设置好了，点击返回：&nbsp;</p> 
+<p><img alt="" class="has" height="768" src="https://img-blog.csdnimg.cn/20191119130724628.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3lhbmhhbmh1aTE=,size_16,color_FFFFFF,t_70" width="1024"></p> 
+<p>16，接着设置swap交换分区，还是像上面一样，接着对下面的空闲部分继续分区，分出8GB大小的分区并设置为用于交换空间，步骤如图：</p> 
+<p><img alt="" class="has" height="768" src="https://img-blog.csdnimg.cn/20191119130933668.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3lhbmhhbmh1aTE=,size_16,color_FFFFFF,t_70" width="1024"></p> 
+<p><img alt="" class="has" height="768" src="https://img-blog.csdnimg.cn/2019111913094348.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3lhbmhhbmh1aTE=,size_16,color_FFFFFF,t_70" width="1024"></p> 
+<p><img alt="" class="has" height="768" src="https://img-blog.csdnimg.cn/20191119130948736.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3lhbmhhbmh1aTE=,size_16,color_FFFFFF,t_70" width="1024"></p> 
+<p><img alt="" class="has" height="768" src="https://img-blog.csdnimg.cn/20191119130954885.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3lhbmhhbmh1aTE=,size_16,color_FFFFFF,t_70" width="1024"></p> 
+<p><img alt="" class="has" height="768" src="https://img-blog.csdnimg.cn/20191119131003792.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3lhbmhhbmh1aTE=,size_16,color_FFFFFF,t_70" width="1024"></p> 
+<p>&nbsp;设置好了就可以返回了：</p> 
+<p><img alt="" class="has" height="768" src="https://img-blog.csdnimg.cn/20191119131010270.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3lhbmhhbmh1aTE=,size_16,color_FFFFFF,t_70" width="1024"></p> 
+<p>17，还剩最后的空闲部分，这个就设置为系统EXT4分区了，双击将此空闲部分直接分为一个区，大小填max（就是利用这整个分区），用于EXT4文件系统，挂载点选择“/”，步骤如下图：</p> 
+<p><img alt="" class="has" height="768" src="https://img-blog.csdnimg.cn/20191119131243702.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3lhbmhhbmh1aTE=,size_16,color_FFFFFF,t_70" width="1024"></p> 
+<p><img alt="" class="has" height="768" src="https://img-blog.csdnimg.cn/20191119131251134.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3lhbmhhbmh1aTE=,size_16,color_FFFFFF,t_70" width="1024"></p> 
+<p><img alt="" class="has" height="768" src="https://img-blog.csdnimg.cn/2019111913125715.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3lhbmhhbmh1aTE=,size_16,color_FFFFFF,t_70" width="1024"></p> 
+<p>设置完成，返回：</p> 
+<p><img alt="" class="has" height="768" src="https://img-blog.csdnimg.cn/20191119131319420.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3lhbmhhbmh1aTE=,size_16,color_FFFFFF,t_70" width="1024"></p> 
+<p>&nbsp;分区完成，最后应该就是上图所示的结果↑</p> 
+<p>双击“结束分区并将修改写入硬盘”</p> 
+<p>18，确认写入，然后它就会开始格式化，安装系统，静静等待完成：</p> 
+<p><img alt="" class="has" height="768" src="https://img-blog.csdnimg.cn/20191119131507562.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3lhbmhhbmh1aTE=,size_16,color_FFFFFF,t_70" width="1024"></p> 
+<p>&nbsp;<img alt="" class="has" height="768" src="https://img-blog.csdnimg.cn/20191119131528147.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3lhbmhhbmh1aTE=,size_16,color_FFFFFF,t_70" width="1024"></p> 
+<p>19，安装过程中会出现“是否使用网络镜像”的选项，这里选“否”：&nbsp;</p> 
+<p><img alt="" class="has" height="768" src="https://img-blog.csdnimg.cn/20191119131532560.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3lhbmhhbmh1aTE=,size_16,color_FFFFFF,t_70" width="1024"></p> 
+<p>20， 等待其结束安装进程。结束后虚拟机会重启并进入新安装的kali，进入到grub启动界面时，证明系统安装成功，这时就可以点击上面的“关闭客户机”来关掉该虚拟机：</p> 
+<p><img alt="" class="has" height="768" src="https://img-blog.csdnimg.cn/20191119131818198.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3lhbmhhbmh1aTE=,size_16,color_FFFFFF,t_70" width="1024"></p> 
+<figure class="image"> 
+ <img alt="" height="774" src="https://img-blog.csdnimg.cn/20191119131829590.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3lhbmhhbmh1aTE=,size_16,color_FFFFFF,t_70" width="1013"> 
+ <figcaption>
+   正在重启 
+ </figcaption> 
+</figure> 
+<p>&nbsp;<img alt="" class="has" height="872" src="https://img-blog.csdnimg.cn/20191119131907304.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3lhbmhhbmh1aTE=,size_16,color_FFFFFF,t_70" width="1024"></p> 
+<p>&nbsp;<img alt="" class="has" height="462" src="https://img-blog.csdnimg.cn/20191119131916606.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3lhbmhhbmh1aTE=,size_16,color_FFFFFF,t_70" width="738"></p> 
+<p>这样安装过程就完成了！</p> 
+<p>&nbsp;</p> 
+<p><strong>三、修改EFI分区内容&nbsp;</strong></p> 
+<p>安装完成了，但是现在还需要简单修改一下EFI分区的东西，使得我们的电脑可以识别我们的便携式kali并从移动硬盘启动</p> 
+<p>1，打开<a href="http://www.diskgenius.cn/download.php" rel="nofollow">diskgenius</a>，选择我们的移动硬盘或者U盘，在右边找到我们的移动硬盘的那个大小约100MB左右的FAT32分区，再点击上面的“浏览文件”标签，如图：</p> 
+<p><img alt="" class="has" height="1021" src="https://img-blog.csdnimg.cn/20191119132218789.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3lhbmhhbmh1aTE=,size_16,color_FFFFFF,t_70" width="1200"></p> 
+<p>2，双击EFI文件夹，进入后你能看到一个名为kali的文件夹，右键重命名为boot,如图：</p> 
+<p><img alt="" class="has" height="260" src="https://img-blog.csdnimg.cn/20191119132356527.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3lhbmhhbmh1aTE=,size_16,color_FFFFFF,t_70" width="654"></p> 
+<p><img alt="" class="has" height="146" src="https://img-blog.csdnimg.cn/20191119132403144.jpg" width="280"></p> 
+<p><img alt="" class="has" height="488" src="https://img-blog.csdnimg.cn/20191119132410443.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3lhbmhhbmh1aTE=,size_16,color_FFFFFF,t_70" width="392"></p> 
+<figure class="image"> 
+ <img alt="" height="105" src="https://img-blog.csdnimg.cn/20191119132415949.jpg" width="208"> 
+ <figcaption>
+   重命名后 
+ </figcaption> 
+</figure> 
+<p>3，双击进入我们刚刚重命名好的boot文件夹，你会看到一个名为grubx64.efi的文件，右键重命名为bootx64.efi,效果如下：</p> 
+<p><img alt="" class="has" height="199" src="https://img-blog.csdnimg.cn/20191119132544853.jpg" width="379"></p> 
+<figure class="image"> 
+ <img alt="" height="151" src="https://img-blog.csdnimg.cn/20191119132550703.jpg" width="291"> 
+ <figcaption>
+   重命名后 
+ </figcaption> 
+</figure> 
+<p>4，关闭软件，所有操作完成！这时可以关闭你的电脑，插上刚刚制作好的便携式kali，进入<a href="https://so.csdn.net/so/search?q=bios&amp;spm=1001.2101.3001.7020" target="_blank" class="hl hl-1" data-report-view="{&quot;spm&quot;:&quot;1001.2101.3001.7020&quot;,&quot;dest&quot;:&quot;https://so.csdn.net/so/search?q=bios&amp;spm=1001.2101.3001.7020&quot;,&quot;extra&quot;:&quot;{\&quot;searchword\&quot;:\&quot;bios\&quot;}&quot;}" data-report-click="{&quot;spm&quot;:&quot;1001.2101.3001.7020&quot;,&quot;dest&quot;:&quot;https://so.csdn.net/so/search?q=bios&amp;spm=1001.2101.3001.7020&quot;,&quot;extra&quot;:&quot;{\&quot;searchword\&quot;:\&quot;bios\&quot;}&quot;}" data-tit="bios" data-pretit="bios">bios</a>从移动硬盘或者U盘启动吧！</p> 
+<p>&nbsp;</p> 
+<p>以上就是所有教程，感谢观看！&nbsp;</p>
+                </div><div data-report-view="{&quot;mod&quot;:&quot;1585297308_001&quot;,&quot;spm&quot;:&quot;1001.2101.3001.6548&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/yanhanhui1/article/details/103134944&quot;,&quot;extend1&quot;:&quot;pc&quot;,&quot;ab&quot;:&quot;new&quot;}"><div></div></div>
+        </div>
+            </div> 
+            
+              </main>     
+       </body>
+       </html>
+    
+            
