@@ -1,4 +1,12 @@
 # sgx-ubuntu20.04-
+
+Linux快照利器：Timeshift
+https://segmentfault.com/a/1190000044260043
+https://blog.csdn.net/weixin_43025343/article/details/122994099
+https://www.yundongfang.com/Yun224364.html
+
+https://blog.csdn.net/u011453680/article/details/135175035
+
 sgx安装ubuntu20.04
 
 
